@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router'
-import { ArrowLeft } from 'lucide-react-native'
+import { ChevronLeft } from 'lucide-react-native'
 import React from 'react'
 import { TouchableWithoutFeedback, View } from 'react-native'
 
@@ -17,7 +17,7 @@ const ReturnButton = () => {
 
     return (
         <TouchableWithoutFeedback onPress={handlePress}>
-            <ArrowLeft size={20} />
+            <ChevronLeft size={25} />
         </TouchableWithoutFeedback>
     )
 }

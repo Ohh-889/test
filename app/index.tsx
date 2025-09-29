@@ -1,10 +1,11 @@
 import { Field, useForm } from '@/components/form/src'
 import Form from '@/components/form/src/react/components/Form'
 import ReturnButton from '@/components/ReturnButton'
+import { useCaptcha } from '@/hooks/use-captcha'
 import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
 import type { TextInputProps } from 'react-native'
-import { Keyboard, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native'
+import { Image, Keyboard, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 type FormInput = {
@@ -55,6 +56,8 @@ const Login = () => {
 
     const [form] = useForm<FormInput>()
 
+    const { getCaptcha, isCounting, label, } = useCaptcha()
+
     const router = useRouter()
 
     function closeKeyboard() {
@@ -88,7 +91,7 @@ const Login = () => {
 
         console.log(values)
 
-        router.replace('/register')
+        router.replace('/timer')
     }
 
     function switchWechat() {
@@ -99,6 +102,14 @@ const Login = () => {
         }
 
         console.log('切换到微信登录')
+    }
+
+    function handleGetCaptcha() {
+        const phone = form.getFieldValue('phone')
+
+        getCaptcha(phone, () => {
+            console.log('请输入正确的手机号')
+        })
     }
 
     return (
@@ -128,7 +139,9 @@ const Login = () => {
                                 <Field trigger='onChangeText' controlMode='controlled' name='code'>
                                     <Input
                                         maxLength={6}
-                                        trailing={<Text className='text-[#030303] w-[40] font-bold'>59s</Text>}
+                                        trailing={<TouchableWithoutFeedback disabled={isCounting} onPress={handleGetCaptcha}>
+                                            <Text suppressHighlighting style={{ textAlign: "right" }} className='text-[#030303] w-[80]  font-bold'>{label}</Text>
+                                        </TouchableWithoutFeedback>}
                                     />
                                 </Field>
                             </View>
@@ -142,8 +155,10 @@ const Login = () => {
 
                                 <TouchableWithoutFeedback onPress={switchWechat}>
                                     <View className="flex-[3] flex-row gap-x-[6] rounded-full bg-[#f1f4f9] items-center justify-center">
-                                        <View className='rounded-full bg-[#222222] size-[25]'>
-
+                                        <View className='rounded-full items-center justify-center bg-[#222222] size-[25]'>
+                                            <Image
+                                                source={require('@/assets/images/wexin.png')}
+                                                className='size-[20]' />
                                         </View>
 
                                         <Text className="text-[#222222] font-bold">换微信</Text>
@@ -151,21 +166,25 @@ const Login = () => {
                                 </TouchableWithoutFeedback>
                             </View>
 
-                            <View className='flex flex-row mt-[20] gap-x-[6] items-center flex-wrap px-[16]'>
+                            <View className='flex flex-row mt-[20]  gap-x-[6] items-center flex-wrap px-[24] justify-center'>
                                 <TouchableWithoutFeedback onPress={toggleAllow}>
-                                    <View style={{ backgroundColor: allow ? '#030303' : '#f1f4f9' }} className='size-[20] rounded-full'></View>
+                                    <View style={{ backgroundColor: allow ? '#030303' : '#f1f4f9' }} className='size-[20] rounded-full items-center justify-center'>
+                                        <Image
+                                            source={require('@/assets/images/duihao.png')}
+                                            className='size-[16]' />
+                                    </View>
                                 </TouchableWithoutFeedback>
 
-                                <Text className='text-[#797979] '>登录即代表您已同意</Text>
+                                <Text className='text-[#797979]'>登录即代表您已同意</Text>
 
                                 <TouchableWithoutFeedback>
-                                    <Text className='text-[#030303] font-bold'>《用户服务协议》</Text>
+                                    <Text suppressHighlighting className='text-[#030303] font-bold'>《用户服务协议》</Text>
                                 </TouchableWithoutFeedback>
 
                                 <Text className='text-[#797979]'>和</Text>
 
                                 <TouchableWithoutFeedback>
-                                    <Text className='text-[#030303] font-bold'>《隐私政策》</Text>
+                                    <Text suppressHighlighting className='text-[#030303] font-bold'>《隐私政策》</Text>
                                 </TouchableWithoutFeedback>
                             </View>
                         </View>
